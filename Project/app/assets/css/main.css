@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        /* ── Hawk Unit Palette ── */
+        --brand-black:   #1a1c14;   /* Ops Black    */
+        --brand-green:   #2f3d27;   /* Field Green  */
+        --brand-ranger:  #4a5e38;   /* Ranger       */
+        --brand-blue:    #1e4d6b;   /* Tactical Blue */
+        --brand-red:     #8b1a1a;   /* Alert Red    */
+        --brand-tan:     #a89880;   /* Desert Tan   */
+        --brand-bone:    #e8e4d9;   /* Bone         */
+        --brand-russet:  #b87333;   /* Russet       */
+        --brand-bark:    #3d2b1f;   /* Bark brown   */
+
+        /* ── Typography ── */
+        --font-display:   'Bebas Neue', 'Arial Narrow', Arial, sans-serif;
+        --font-condensed: 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+        --font-body:      'Barlow', system-ui, sans-serif;
+    }
+
+    html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+        font-family: var(--font-body);
+        background-color: var(--brand-black);
+        color: var(--brand-bone);
+        overflow-x: hidden;
+    }
+
+    * { -webkit-tap-highlight-color: transparent; }
+
+    ::selection {
+        background: var(--brand-russet);
+        color: var(--brand-bone);
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--brand-russet);
+        outline-offset: 3px;
+    }
+}
+
+@layer utilities {
+    /* ── Background colors ── */
+    .bg-brand-black   { background-color: var(--brand-black); }
+    .bg-brand-green   { background-color: var(--brand-green); }
+    .bg-brand-ranger  { background-color: var(--brand-ranger); }
+    .bg-brand-blue    { background-color: var(--brand-blue); }
+    .bg-brand-red     { background-color: var(--brand-red); }
+    .bg-brand-tan     { background-color: var(--brand-tan); }
+    .bg-brand-bone    { background-color: var(--brand-bone); }
+    .bg-brand-russet  { background-color: var(--brand-russet); }
+    .bg-brand-bark    { background-color: var(--brand-bark); }
+
+    /* ── Text colors ── */
+    .text-brand-black   { color: var(--brand-black); }
+    .text-brand-green   { color: var(--brand-green); }
+    .text-brand-ranger  { color: var(--brand-ranger); }
+    .text-brand-blue    { color: var(--brand-blue); }
+    .text-brand-red     { color: var(--brand-red); }
+    .text-brand-tan     { color: var(--brand-tan); }
+    .text-brand-bone    { color: var(--brand-bone); }
+    .text-brand-russet  { color: var(--brand-russet); }
+    .text-brand-bark    { color: var(--brand-bark); }
+
+    /* ── Border colors ── */
+    .border-brand-black   { border-color: var(--brand-black); }
+    .border-brand-green   { border-color: var(--brand-green); }
+    .border-brand-red     { border-color: var(--brand-red); }
+    .border-brand-russet  { border-color: var(--brand-russet); }
+    .border-brand-bone    { border-color: var(--brand-bone); }
+    .border-brand-tan     { border-color: var(--brand-tan); }
+
+    /* ── Font families ── */
+    .font-display   { font-family: var(--font-display); }
+    .font-condensed { font-family: var(--font-condensed); }
+    .font-body      { font-family: var(--font-body); }
+
+    /* ── Buttons ── */
+    .btn-primary {
+        padding: 14px 32px;
+        background: var(--brand-red);
+        color: var(--brand-bone);
+        font-family: var(--font-condensed);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .btn-primary:hover {
+        background: color-mix(in srgb, var(--brand-red) 85%, transparent);
+        transform: scale(1.04);
+    }
+
+    .btn-outline {
+        padding: 14px 32px;
+        background: transparent;
+        color: var(--brand-bone);
+        font-family: var(--font-condensed);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        border: 2px solid rgba(232, 228, 217, 0.3);
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    }
+    .btn-outline:hover {
+        border-color: var(--brand-bone);
+        background: rgba(232, 228, 217, 0.1);
+        transform: scale(1.04);
+    }
+
+    /* ── Scroll-reveal ── */
+    .fade-up {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* ── Float (logo) ── */
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(-10px); }
+    }
+    .animate-float { animation: float 4s ease-in-out infinite; }
+
+    /* ── Pulse glow ── */
+    @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(184,115,51,0); }
+        50%       { box-shadow: 0 0 18px 4px rgba(184,115,51,0.3); }
+    }
+    .animate-pulse-glow { animation: pulse-glow 2.5s ease-in-out infinite; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar             { width: 6px; }
+    ::-webkit-scrollbar-track       { background: var(--brand-black); }
+    ::-webkit-scrollbar-thumb       { background: var(--brand-russet); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--brand-tan); }
+}
