@@ -13,15 +13,15 @@ Internal developer documentation. App is a web app that shows recurring payments
 
 | Developer | Area |
 |-----------|------|
-| **Daria** | App shell, UI for accounts, subscriptions and bills, dashboard, notifications, platform |
+| **Daria** | UI only: app shell, pages for accounts, subscriptions and bills, dashboard |
 | **Cristi** | Expenses, budgets, Smart Import screens |
-| **Geo** | Logic and backend: auth, subscriptions, bills, recurrence, automatic subscription payment, Smart Import detection, Cloud Functions, security rules |
+| **Geo** | Nuxt scaffold (pushed), Firebase setup and everything backend: auth, subscriptions, bills, recurrence, automatic subscription payment, Smart Import detection, Cloud Functions (emails, scheduled jobs), seed data, indexes, security rules |
 
 ## Work split
 
-- **Geo does not touch Nuxt or any UI.** He delivers plain TypeScript service modules (no Vue, no Nuxt) in `services/`, `utils/` and `functions/src/smart-import/`, tested with Vitest and the Firebase Emulator Suite. Everything he builds can be finished without Daria or Cristi.
+- **Geo owns the Nuxt scaffold (already pushed), all Firebase setup and all backend.** He delivers plain TypeScript service modules (no Vue) in `services/` and `utils/`, plus all Cloud Functions in `functions/`, tested with Vitest and the Firebase Emulator Suite. He builds no screens. Everything he builds can be finished without Daria or Cristi.
 - **Daria and Cristi build all the screens.** They wrap Geo's services in composables and build the pages.
-- Daria's Part 1 is independent of everyone.
+- Daria's Part 1 needs no backend: it is built on mock data until Geo's seed script is merged.
 
 ### Geo's public interface (what Daria and Cristi call)
 
@@ -30,7 +30,7 @@ Internal developer documentation. App is a web app that shows recurring payments
 | `services/authService` | `register`, `login`, `loginWithGoogle`, `logout`, `resetPassword`, `onAuthChange` |
 | `services/subscriptionService` | 🔴 CRUD, `subscribeToSubscriptions` (onSnapshot), `uploadLogo`, `uploadReceipt` (🔴 no more manual "mark as paid": subscriptions are paid automatically) |
 | 🔴 `services/billService` | 🔴 CRUD, `subscribeToBills` (onSnapshot), `markBillAsPaid(id, amountPaidCents, paidAt?)`, `uploadLogo`, `uploadReceipt` |
-| 🔴 `utils/autoPay` | 🔴 `processDueSubscriptions(now)`: pays every active subscription that is due (payment entry, next due date, matching expense). Called by Daria's daily Cloud Function |
+| 🔴 `utils/autoPay` | 🔴 `processDueSubscriptions(now)`: pays every active subscription that is due (payment entry, next due date, matching expense). Called by Geo's daily Cloud Function |
 | `utils/recurrence` | `getNextDueDate(date, cycle)`, `normalizeToMonthly(sub)` |
 | `services/importService` | `importTransactions(source)`, `detectSubscriptions(transactions)` |
 | `services/detectedService` | `subscribeToDetected`, `confirm`, `dismiss`, `confirmAll`, `merge` |
@@ -38,7 +38,7 @@ Internal developer documentation. App is a web app that shows recurring payments
 
 ### 🔴 How the automatic subscription payment works
 
-🔴 - Once a day, Daria's scheduled Cloud Function calls Geo's `processDueSubscriptions(now)`.
+🔴 - Once a day, Geo's scheduled Cloud Function calls `processDueSubscriptions(now)`.
 🔴 - For every **active** subscription with `nextDueDate <= today`, in one batched write: add a `payments` entry (`auto: true`), create the matching expense (`source = subscription`, `subscriptionId`), set the next due date with `getNextDueDate`, set `lastAutoPaidAt`.
 🔴 - If the function was down for some days, it loops and **catches up** every missed due date.
 🔴 - It is **idempotent**: the payment document id is built from the due date (for example `2026-11-05`), so running it twice never creates a duplicate.
@@ -61,20 +61,12 @@ Internal developer documentation. App is a web app that shows recurring payments
 
 ## Daria's Track
 
-### Part 1: Independent
-- [ ] Nuxt 3 scaffold (Nuxt UI, Pinia, VueFire, TypeScript) and folder structure
-- [ ] Commit a shared `firebase.json` with the Emulator Suite (Auth, Firestore, Storage, Functions) and a demo project id, so all three run the same local setup. No real Firebase project and no Blaze plan during development
+### Part 1: Independent (mock data, no backend)
 - [ ] 🔴 Layout (sidebar, navbar, responsive) with **separate Subscriptions and Bills entries in the sidebar and navbar**, theme and shared components (Button, Modal, Card, Toast)
-- [ ] Set up Cloud Functions in the emulator and the email provider (Resend or SendGrid, free tier, API key kept in a local env file) early
-- [ ] 🔴 Seed script with test data (subscriptions, **bills**, expenses, budgets, **including a subscription due today to show the automatic payment**) and the Firestore index definitions
-- [ ] Dashboard charts (category donut and monthly trend) on seed data
-- [ ] 🔴 Dashboard cards (spending this month, remaining budget, active subscription cost monthly and yearly, **plus a separate card for bills this month: paid so far and still due**) and empty state, on seed data
-- [ ] 🔴 **Two separate upcoming boxes** on the dashboard, on seed data: **bills** sorted by due date with overdue items highlighted, and **subscription charges** sorted by date (never overdue)
+- [ ] Dashboard charts (category donut and monthly trend) on mock data
+- [ ] 🔴 Dashboard cards (spending this month, remaining budget, active subscription cost monthly and yearly, **plus a separate card for bills this month: paid so far and still due**) and empty state, on mock data
+- [ ] 🔴 **Two separate upcoming boxes** on the dashboard, on mock data: **bills** sorted by due date with overdue items highlighted, and **subscription charges** sorted by date (never overdue)
 - [ ] CI pipeline (GitHub Actions): lint, tests and build on every pull request
-- [ ] `onUserCreate` Cloud Function that sends the welcome email
-- [ ] 🔴 Daily scheduled Cloud Function that emails reminders **for bills and subscriptions** (for a subscription the email says it will be charged automatically) and logs each one in `notifications` to prevent duplicates, triggered manually in the emulator and tested on seed data
-- [ ] 🔴 **In the same daily run, call Geo's `processDueSubscriptions(now)`** so due subscriptions are paid automatically, tested on seed data
-- [ ] Stretch: budget alert email at 100%
 
 ### Part 2: Uses Geo's services
 - [ ] `useAuth()` composable wrapping `authService`, and the route middleware
@@ -84,10 +76,8 @@ Internal developer documentation. App is a web app that shows recurring payments
 - [ ] 🔴 Subscription pages: list, add and edit form with validation (**next due date must be today or later**), delete confirmation, logo and receipt upload with preview, cancelled status. **No "mark as paid" button: show a "paid automatically" status and the date of the last automatic payment**
 - [ ] 🔴 **Bills pages (new):** list, add and edit form with validation (amount is an optional estimate), delete confirmation, **"Mark as paid" dialog asking for the amount paid (pre-filled with the estimate) and the payment date**, logo and receipt upload with preview, cancelled status
 - [ ] Profile and settings page (reminder settings)
-- [ ] 🔴 Switch the dashboard from seed data to the real composables (`useSubscriptions()` and `useBills()`, each in its own box)
+- [ ] 🔴 Switch the dashboard from mock data to the real composables (`useSubscriptions()` and `useBills()`, each in its own box)
 - [ ] Dashboard banner for detected subscriptions waiting for review, linking to Cristi's review screen
-- [ ] Firestore indexes and performance check
-- [ ] 🔴 End-to-end test of the welcome and reminder emails **and of the automatic subscription payment**
 - [ ] 🔴 Test UC-1.1 to UC-1.4 UI flows (**UC-1.2 on both Subscriptions and Bills screens, UC-1.3 for the manual bill payment and the automatic subscription payment**) and UC-3.1 to UC-3.4
 
 ---
@@ -115,9 +105,11 @@ Internal developer documentation. App is a web app that shows recurring payments
 ## Geo's Track
 
 ### G1. Setup
-- [ ] Work only on the Firebase Emulator Suite with a demo project id: no real Firebase project, no Blaze plan and no card needed for Geo
+- [x] Nuxt 3 scaffold (Nuxt UI, Pinia, VueFire, TypeScript) and folder structure, pushed
+- [ ] Shared `firebase.json` with the Emulator Suite (Auth, Firestore, Storage, Functions) and a demo project id, committed so all three run the same local setup. No real Firebase project, no Blaze plan and no card during development
 - [ ] 🔴 Write the shared types in `types/` from the data model (**including `Bill`, bill `Payment`, `source = subscription` on expenses and `subscriptionId`**) and freeze them
-- [ ] Set up TypeScript, Vitest and the Firebase Emulator Suite for his folders (`services/`, `utils/`, `functions/src/smart-import/`), with his own test data
+- [ ] Set up TypeScript and Vitest for `services/`, `utils/` and `functions/`
+- [ ] 🔴 Seed script with test data (subscriptions, **bills**, expenses, budgets, **including a subscription due today to show the automatic payment**) and the Firestore index definitions. Merge it early so Daria and Cristi can switch from mock data
 - [ ] Define a fixed list of default category ids as a constant, so subscriptions and bills do not depend on Cristi's categories
 
 ### G2. Foundation (tag `v0.1-foundation`)
@@ -143,7 +135,16 @@ Internal developer documentation. App is a web app that shows recurring payments
 - [ ] Sample bank statement CSV for testing
 - [ ] Stretch: Gmail receipt scan as one more adapter
 
-### G4. Security rules and testing
+### G4. Cloud Functions and notifications
+- [ ] Set up Cloud Functions in the emulator and the email provider (Resend or SendGrid, free tier, API key kept in a local env file)
+- [ ] `onUserCreate` Cloud Function that sends the welcome email
+- [ ] 🔴 Daily scheduled Cloud Function that emails reminders **for bills and subscriptions** (for a subscription the email says it will be charged automatically) and logs each one in `notifications` to prevent duplicates, triggered manually in the emulator
+- [ ] 🔴 **In the same daily run, call `processDueSubscriptions(now)`** so due subscriptions are paid automatically
+- [ ] Stretch: budget alert email at 100%
+- [ ] 🔴 End-to-end test of the welcome and reminder emails **and of the automatic subscription payment**
+- [ ] Firestore indexes and performance check
+
+### G5. Security rules and testing
 - [ ] 🔴 Firestore and Storage security rules for all collections (**including `bills` and `bills/{id}/payments`**), written from the frozen data model (owner-only access, read-only `catalog`)
 - [ ] Rules tests in the emulator
 - [ ] 🔴 Unit and emulator tests for every service, plus edge cases (month-end dates, invalid amounts, price changes, yearly plans, **several missed days of automatic payment, running `processDueSubscriptions` twice, cancelled subscriptions, a bill paid with an amount different from the estimate**)
@@ -164,8 +165,8 @@ Internal developer documentation. App is a web app that shows recurring payments
 
 Nothing is deployed and nobody enables the Blaze plan or enters card details while developing. Auth, Firestore, Storage and Functions all run on the Emulator Suite. Only when the app is finished and deployment is required:
 
-- [ ] One person creates the real Firebase project
-- [ ] That person enables the Blaze plan (required for Cloud Functions and Cloud Storage)
+- [ ] Geo creates the real Firebase project
+- [ ] Geo enables the Blaze plan (required for Cloud Functions and Cloud Storage)
 - [ ] Deploy rules, indexes, functions and the static Nuxt build to Firebase Hosting
 - [ ] Run the catalog seed script against the real project
 - [ ] Smoke-test every use case on the deployed app
