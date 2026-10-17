@@ -8,6 +8,22 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  // Defaults = demo mode. Overridden automatically by NUXT_PUBLIC_* .env vars (..env / shell).
+  runtimeConfig: {
+    public: {
+      useEmulator: true,
+      firebase: {
+        apiKey: '',
+        authDomain: '',
+        projectId: '',
+        storageBucket: '',
+        messagingSenderId: '',
+        appId: '',
+        measurementId: '',
+      },
+    },
+  },
+
   app: {
     head: {
       title: 'APP',
