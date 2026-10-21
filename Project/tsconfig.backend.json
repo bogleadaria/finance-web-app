@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "types": ["vitest/globals", "node"],
+    "paths": { "~~/*": ["./*"] }
+  },
+  "include": ["types/**/*.ts", "services/**/*.ts", "utils/**/*.ts", "tests/**/*.ts", "functions/src/**/*.ts", "vitest.backend.config.ts", "vitest.emulator.config.ts"]
+}

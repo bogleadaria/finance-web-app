@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "types": ["node"],
+    "paths": { "~~/*": ["../*"] }
+  },
+  "include": ["src/**/*.ts", "tsup.config.ts", "../types/**/*.ts", "../utils/**/*.ts"],
+  "exclude": ["**/*.test.ts", "../utils/**/*.test.ts", "../types/**/*.test.ts"]
+}

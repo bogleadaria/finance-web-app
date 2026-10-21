@@ -107,8 +107,8 @@ Internal developer documentation. App is a web app that shows recurring payments
 ### G1. Setup
 - [x] Nuxt 3 scaffold (Nuxt UI, Pinia, VueFire, TypeScript) and folder structure, pushed
 - [x] Shared `firebase.json` with the Emulator Suite (Auth, Firestore, Storage, Functions) and a demo project id, committed so all three run the same local setup. No real Firebase project, no Blaze plan and no card during development
-- [ ] 🔴 Write the shared types in `types/` from the data model (**including `Bill`, bill `Payment`, `source = subscription` on expenses and `subscriptionId`**) and freeze them
-- [ ] Set up TypeScript and Vitest for `services/`, `utils/` and `functions/`
+- [x] 🔴 Write the shared types in `types/` from the data model (**including `Bill`, bill `Payment`, `source = subscription` on expenses and `subscriptionId`**) and freeze them
+- [x] Set up TypeScript and Vitest for `services/`, `utils/` and `functions/`
 - [ ] 🔴 Seed script with test data (subscriptions, **bills**, expenses, budgets, **including a subscription due today to show the automatic payment**) and the Firestore index definitions. Merge it early so Daria and Cristi can switch from mock data
 - [ ] Define a fixed list of default category ids as a constant, so subscriptions and bills do not depend on Cristi's categories
 

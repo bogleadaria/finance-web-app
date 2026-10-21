@@ -1,6 +1,37 @@
 {
-  "name": "functions",
-  "main": "index.js",
-  "engines": { "node": "20" },
-  "dependencies": { "firebase-admin": "^12.0.0", "firebase-functions": "^6.0.0" }
+  "name": "finance-web-app",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "concurrently -k -n emu,nuxt \"firebase emulators:start\" \"nuxt dev\"",
+    "dev:real": "NUXT_PUBLIC_USE_EMULATOR=false nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "typecheck:backend": "tsc -p tsconfig.backend.json",
+    "test:backend": "vitest run -c vitest.backend.config.ts",
+    "test:app": "vitest run --passWithNoTests",
+    "test": "npm run typecheck:backend && npm run test:backend && npm run test:app",
+    "test:emulator": "firebase emulators:exec --project demo-app --only auth,firestore,storage \"vitest run -c vitest.emulator.config.ts\"",
+    "functions:build": "npm --prefix functions run build"
+  },
+  "dependencies": {
+    "crossws": "^0.4.5",
+    "firebase": "^13.0.0",
+    "nuxt": "^4.4.7",
+    "vue": "^3.5.35",
+    "vue-router": "^5.1.0"
+  },
+  "devDependencies": {
+    "@nuxt/test-utils": "^4.0.3",
+    "@nuxtjs/tailwindcss": "^6.12.0",
+    "@types/node": "^22.0.0",
+    "concurrently": "^10.0.6",
+    "firebase-admin": "^14.5.0",
+    "firebase-tools": "^15.34.0",
+    "typescript": "^5.5.0",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.5"
+  }
 }
